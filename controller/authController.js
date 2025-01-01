@@ -28,7 +28,8 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' })
 
         res.cookie('authToken', token, {
-            httpOnly: true
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
         })
 
         res.status(200).json({ message: 'User logged in', accessToken: token, user: user })

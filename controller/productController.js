@@ -1,16 +1,5 @@
 const Product = require('../models/productModel')
-
-//POST (Create a product)
-const createProduct = async (req, res) => {
-    const { name, category, img, desc, price } = req.body
-    try {
-        const product = new Product({ name, category, img, desc, price, createdBy: req.user.id })
-        await product.save()
-        res.status(200).json(product)
-    } catch (err) {
-        res.status(500).json({ message: 'failed to create new product', err: err.message })
-    }
-}
+const cloudinary = require('../config/cloudinaryConfig')
 
 //GET (Get all the product)
 const getAllProduct = async (req, res) => {
@@ -29,6 +18,31 @@ const getProductById = async (req, res) => {
         res.status(200).json(product)
     } catch (err) {
         res.status(500).json({ message: 'failed to fetch', err: err.message })
+    }
+}
+
+//GET (Get product based on User ID)
+const getProductByUserId = async (req, res) => {
+    try {
+        const product = await Product.find({ createdBy: req.user.id })
+        if (!product.length) {
+            return res.status(404).json({ message: "No products found for this user." });
+        }
+        res.status(200).json(product)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+//POST (Create a product)
+const createProduct = async (req, res) => {
+    const { name, category, img, desc, price, } = req.body
+    try {
+        const product = new Product({ name, category, img, desc, price, createdBy: req.user.id })
+        await product.save()
+        res.status(200).json(product)
+    } catch (err) {
+        res.status(500).json({ message: 'failed to create new product', err: err.message })
     }
 }
 
@@ -59,5 +73,17 @@ const deleteProduct = async (req, res) => {
     }
 }
 
+//POST (Upload Image to Cloudinary)
+const uploadImage = async (req, res) => {
+    try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'products',
+            resource_type: 'auto'
+        })
+        res.status(200).json({ img: result.secure_url })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
 
-module.exports = { createProduct, getAllProduct, getProductById, deleteProduct, updateProduct }
+module.exports = { createProduct, getAllProduct, getProductById, deleteProduct, updateProduct, getProductByUserId, uploadImage }

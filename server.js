@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const connectDB = require('./config/dbConnection');
 const authRoutes = require('./routes/authRoutes')
 const productRoutes = require('./routes/productRoutes')
+const path = require('path')
 
 //connecting express and database
 connectDB()
@@ -14,6 +15,9 @@ const app = express()
 app.use(cors({ origin: 'http://localhost:4200', credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(express.urlencoded({extended: true}))
+const _dirname = path.resolve()
+app.use('/uploads', express.static(path.join(_dirname, "/uploads")))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/product', productRoutes)
