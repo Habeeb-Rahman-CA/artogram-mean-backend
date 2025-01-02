@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const connectDB = require('./config/dbConnection');
 const authRoutes = require('./routes/authRoutes')
 const productRoutes = require('./routes/productRoutes')
+const cartRoutes = require('./routes/cartRoutes')
 const path = require('path')
 
 //connecting express and database
@@ -21,6 +22,7 @@ app.use('/uploads', express.static(path.join(_dirname, "/uploads")))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/product', productRoutes)
+app.use('/api/cart', cartRoutes)
 
 const port = process.env.PORT
 app.listen(port, () => {
