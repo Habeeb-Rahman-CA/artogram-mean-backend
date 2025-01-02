@@ -18,4 +18,18 @@ const addCart = async (req, res) => {
     }
 }
 
-module.exports = { addCart }
+//GET (Get all the cart item)
+const getCartById = async (req, res) => {
+    const { userId } = req.params
+    try {
+        const cart = await Cart.findOne({ user: userId }).populate('products')
+        if (!cart) {
+            return res.status(500).json({ message: 'cart not found' })
+        }
+        res.status(200).json({ message: 'Cart fetched successfully', cart })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+module.exports = { addCart, getCartById }
