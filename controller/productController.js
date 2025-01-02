@@ -15,7 +15,14 @@ const getAllProduct = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id).populate({ path: "createdBy", select: ["name", "profilePic"] })
-        res.status(200).json(product)
+        const suggestedProduct = await Product.find({
+            category: product.category,
+            _id: { $ne: req.params.id }
+        }).limit(10).populate({ path: "createdBy", select: ["name"] })
+        const popularProduct = await Product.find({
+            _id: {$ne: req.params.id}
+        }).limit(10).populate({ path: "createdBy", select: ["name"] })
+        res.status(200).json({product, suggestedProduct, popularProduct})
     } catch (err) {
         res.status(500).json({ message: 'failed to fetch', err: err.message })
     }
@@ -30,7 +37,7 @@ const getProductByUserId = async (req, res) => {
         }
         res.status(200).json(product)
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: 'failed to fetch', err: err.message })
     }
 }
 
@@ -43,6 +50,19 @@ const createProduct = async (req, res) => {
         res.status(200).json(product)
     } catch (err) {
         res.status(500).json({ message: 'failed to create new product', err: err.message })
+    }
+}
+
+//POST (Upload Image to Cloudinary)
+const uploadImage = async (req, res) => {
+    try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'products',
+            resource_type: 'auto'
+        })
+        res.status(200).json({ img: result.secure_url })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
     }
 }
 
@@ -70,19 +90,6 @@ const deleteProduct = async (req, res) => {
         res.status(200).json({ message: 'product deleted successfully' })
     } catch (err) {
         res.status(500).json({ message: 'failed to delete', err: err.message })
-    }
-}
-
-//POST (Upload Image to Cloudinary)
-const uploadImage = async (req, res) => {
-    try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'products',
-            resource_type: 'auto'
-        })
-        res.status(200).json({ img: result.secure_url })
-    } catch (err) {
-        res.status(500).json({ message: err.message })
     }
 }
 
