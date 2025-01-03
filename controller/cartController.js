@@ -1,6 +1,6 @@
 const Cart = require('../models/cartModel')
 
-//POST (Product added to cart)
+//POST (add product to cart)
 const addCart = async (req, res) => {
     const { userId, productId } = req.body
     try {
