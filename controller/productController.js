@@ -20,9 +20,9 @@ const getProductById = async (req, res) => {
             _id: { $ne: req.params.id }
         }).limit(10).populate({ path: "createdBy", select: ["name"] })
         const popularProduct = await Product.find({
-            _id: {$ne: req.params.id}
+            _id: { $ne: req.params.id }
         }).limit(10).populate({ path: "createdBy", select: ["name"] })
-        res.status(200).json({product, suggestedProduct, popularProduct})
+        res.status(200).json({ product, suggestedProduct, popularProduct })
     } catch (err) {
         res.status(500).json({ message: 'failed to fetch', err: err.message })
     }

@@ -8,6 +8,7 @@ const productRoutes = require('./routes/productRoutes')
 const cartRoutes = require('./routes/cartRoutes')
 const wishlistRoutes = require('./routes/wishlistRoutes')
 const userRoutes = require('./routes/userRoutes')
+const orderRoutes = require('./routes/orderRoutes')
 const path = require('path')
 
 //connecting express and database
@@ -18,7 +19,7 @@ const app = express()
 app.use(cors({ origin: 'http://localhost:4200', credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 const _dirname = path.resolve()
 app.use('/uploads', express.static(path.join(_dirname, "/uploads")))
 
@@ -27,6 +28,7 @@ app.use('/api/product', productRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/wishlist', wishlistRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/order', orderRoutes)
 
 const port = process.env.PORT
 app.listen(port, () => {

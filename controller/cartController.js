@@ -35,7 +35,7 @@ const getCartByUserId = async (req, res) => {
 //DELETE (Delete cart item)
 const deleteCartItem = async (req, res) => {
     try {
-        const { cartId, productId } = req.params 
+        const { cartId, productId } = req.params
         const cart = await Cart.findByIdAndUpdate(cartId,
             { $pull: { products: productId } }, { new: true })
         res.status(200).json({ message: 'Cart item deleted', cart })

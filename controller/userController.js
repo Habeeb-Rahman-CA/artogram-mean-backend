@@ -25,12 +25,12 @@ const deleteAddress = async (req, res) => {
     console.log('hey');
     try {
         const userId = req.user.id
-        const addressId  = req.params.id
+        const addressId = req.params.id
         const user = await User.findByIdAndUpdate(userId,
             { $pull: { addresses: { _id: addressId } } },
             { new: true }
         )
-        res.status(200).json({message: "deleted successfully", user})
+        res.status(200).json({ message: "deleted successfully", user })
     } catch (err) {
         res.status(500).json({ message: 'failed to delete', err: err.message })
     }
