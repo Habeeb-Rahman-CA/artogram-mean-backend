@@ -1,5 +1,6 @@
 const Cart = require('../models/cartModel')
 const Order = require('../models/orderModel')
+const Product = require('../models/productModel')
 const User = require('../models/userModel')
 
 //POST (checkout the cart)
@@ -34,25 +35,58 @@ const checkout = async (req, res) => {
     }
 }
 
+//GET (get order based on user)
 const getOrder = async (req, res) => {
     try {
         const userId = req.user.id
         const orders = await Order.find({ user: userId }).populate('items.product')
         res.status(200).json({ message: 'fetch all the orders', orders })
     } catch (err) {
-        res.status(500).json({ message: 'failed to fetch', })
+        res.status(500).json({ message: 'failed to fetch', err: err.message })
     }
 }
 
-const getAllOrders = async(req,res) => {
+//GET (get all the orders)
+const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
-        res.status(200).json({message: 'fetch entire orders', orders})
+        res.status(200).json({ message: 'fetch entire orders', orders })
     } catch (err) {
-        res.status(500).json({message: 'failed to fetch'})
+        res.status(500).json({ message: 'failed to fetch', err: err.message })
     }
 }
 
+//GET (get order product based on artist)
+const getArtistOrder = async (req, res) => {
+    try {
+        const artistId = req.user.id
+        const products = await Product.find({ createdBy: artistId }).select('_id')
+        const productIds = products.map((product) => product._id)
+        const orders = await Order.find({ 'items.product': { $in: productIds } }).populate({
+            path: 'items.product', select: ['_id', 'name', 'price', 'createdBy']
+        })
+        if (orders.length === 0) {
+            return res.status(500).json({ message: 'No order is found for this artist' })
+        }
+        const filteredOrder = orders.map(order => {
+            const filteredItems = order.items.filter(item => item.product.createdBy.toString() === artistId)
+            return {
+                _id: order._id,
+                user: order.user,
+                items: filteredItems,
+                total: filteredItems.reduce((sum, item) => sum + item.price, 0),
+                status: order.status,
+                createdAt: order.createdAt,
+                address: order.address,
+            }
+        })
+        res.status(200).json({ message: 'Order fetched successfully', filteredOrder })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch', err: err.message })
+    }
+}
+
+//PATCH (cancel order updating status)
 const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.body
@@ -62,17 +96,18 @@ const cancelOrder = async (req, res) => {
         )
         res.status(200).json({ message: 'Order is cancelled' })
     } catch (err) {
-        res.status(500).json({ message: 'failed to cancel' })
+        res.status(500).json({ message: 'failed to cancel', err: err.message })
     }
 }
 
-const deleteOrder = async(req, res) => {
+//DELETE (removing the order from order list)
+const deleteOrder = async (req, res) => {
     try {
         await Order.findByIdAndDelete(req.params.id)
-        res.status(200).json({message: "Order deleted successfully"})
+        res.status(200).json({ message: "Order deleted successfully" })
     } catch (err) {
-        res.status(500).json({message: 'failed to delete order'})
+        res.status(500).json({ message: 'failed to delete order', err: err.message })
     }
 }
 
-module.exports = { checkout, getOrder, cancelOrder, deleteOrder, getAllOrders }
+module.exports = { checkout, getOrder, cancelOrder, deleteOrder, getAllOrders, getArtistOrder }
