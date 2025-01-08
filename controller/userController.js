@@ -1,4 +1,34 @@
 const User = require('../models/userModel')
+const cloudinary = require('../config/cloudinaryConfig')
+
+const uploadUserImage = async (req, res) => {
+    try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'user',
+            resource_type: 'auto'
+        })
+        res.status(200).json({ img: result.secure_url })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+const updateUser = async (req, res) => {
+    const { name, bio, profilePic, coverPic, phoneNumber, gender } = req.body
+    try {
+        const user = await User.findByIdAndUpdate(req.user.id, {
+            name: name,
+            bio: bio,
+            profilePic: profilePic,
+            coverPic: coverPic,
+            phoneNumber: phoneNumber,
+            gender: gender
+        })
+        res.status(200).json({ message: 'user profile updated', user })
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to update the user' })
+    }
+}
 
 const addAddress = async (req, res) => {
     try {
@@ -36,4 +66,4 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress }
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage }
