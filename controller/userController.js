@@ -5,10 +5,27 @@ const cloudinary = require('../config/cloudinaryConfig')
 const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
-        console.log(user)
         res.status(200).json({ message: 'fetched current user', user })
     } catch (err) {
         res.status(500).json({ message: 'failed to get user', err: err.message })
+    }
+}
+
+const getAllArtist = async (req, res) => {
+    try {
+        const user = await User.find({ role: 'artist' }).limit(10)
+        res.status(200).json({ message: 'fetch all artist', user })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch all artist' })
+    }
+}
+
+const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        res.status(200).json({ message: 'fetched user by id', user })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to get user id' })
     }
 }
 
@@ -25,7 +42,7 @@ const uploadUserImage = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    const { name, bio, profilePic, coverPic, gender, phoneNumber } = req.body.user
+    const { name, bio, profilePic, coverPic, gender, phoneNumber, location } = req.body.user
     try {
         const user = await User.findByIdAndUpdate(req.user.id, {
             name: name,
@@ -33,7 +50,8 @@ const updateUser = async (req, res) => {
             profilePic: profilePic,
             coverPic: coverPic,
             phoneNumber: phoneNumber,
-            gender: gender
+            gender: gender,
+            location: location
         }, { new: true })
         res.status(200).json({ message: 'user profile updated', updated: user })
     } catch (err) {
@@ -77,4 +95,4 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser }
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getUserById, getAllArtist }

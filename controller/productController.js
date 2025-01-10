@@ -41,6 +41,19 @@ const getProductByUserId = async (req, res) => {
     }
 }
 
+//GET(Get product based on Artist Id)
+const getProductByArtistId = async (req, res) => {
+    try {
+        const product = await Product.find({ createdBy: req.params.id }).populate('createdBy').limit(10)
+        if (!product.length) {
+            return res.status(404).json({ message: "No products found for this user." });
+        }
+        res.status(200).json({ message: 'Product fetched', product })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch', err: err.message })
+    }
+}
+
 //POST (Create a product)
 const createProduct = async (req, res) => {
     const { name, category, img, desc, price, } = req.body
@@ -93,4 +106,4 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-module.exports = { createProduct, getAllProduct, getProductById, deleteProduct, updateProduct, getProductByUserId, uploadImage }
+module.exports = { createProduct, getAllProduct, getProductById, deleteProduct, updateProduct, getProductByUserId, uploadImage, getProductByArtistId }

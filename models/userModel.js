@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema({
     profilePic: { type: String, default: '' },
     coverPic: { type: String, default: '' },
     phoneNumber: { type: String, default: '' },
+    location: {type: String, default: ''},
     addresses: [addressSchema],
     gender: { type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'], default: 'Prefer not to say' },
     createdAt: { type: Date, default: Date.now() }
