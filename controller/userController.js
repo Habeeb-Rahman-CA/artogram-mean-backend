@@ -1,6 +1,17 @@
 const User = require('../models/userModel')
 const cloudinary = require('../config/cloudinaryConfig')
 
+//User profile API
+const getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id)
+        console.log(user)
+        res.status(200).json({ message: 'fetched current user', user })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to get user', err: err.message })
+    }
+}
+
 const uploadUserImage = async (req, res) => {
     try {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -15,8 +26,6 @@ const uploadUserImage = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { name, bio, profilePic, coverPic, gender, phoneNumber } = req.body.user
-    console.log(name);
-    console.log(req.user.id);
     try {
         const user = await User.findByIdAndUpdate(req.user.id, {
             name: name,
@@ -32,6 +41,7 @@ const updateUser = async (req, res) => {
     }
 }
 
+//User Address API
 const addAddress = async (req, res) => {
     try {
         const { fullName, phoneNumber, address, street, landmark, city, pincode, state } = req.body
@@ -54,7 +64,6 @@ const getAddress = async (req, res) => {
 }
 
 const deleteAddress = async (req, res) => {
-    console.log('hey');
     try {
         const userId = req.user.id
         const addressId = req.params.id
@@ -68,4 +77,4 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage }
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser }
