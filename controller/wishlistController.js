@@ -1,6 +1,7 @@
 const Wishlist = require('../models/wishlistModel')
 
-//POST (add product to wishlist)
+// @route POST /api/wishlist
+// @desc add item to wishlist
 const addWishlist = async (req, res) => {
     const { userId, productId } = req.body
     try {
@@ -19,7 +20,8 @@ const addWishlist = async (req, res) => {
     }
 }
 
-//GET (get all wishlist item)
+// @route GET /api/wishlist/:id
+// @desc get wishlist items
 const getWishlist = async (req, res) => {
     try {
         const wishlist = await Wishlist.find({ user: req.params.id }).populate('products')
@@ -32,6 +34,8 @@ const getWishlist = async (req, res) => {
     }
 }
 
+// @route DELETE /api/wishlist/:wishlistId/products/:productId
+// @desc remove item from wishlist
 const deleteWishlist = async (req, res) => {
     try {
         const { wishlistId, productId } = req.params

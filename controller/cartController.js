@@ -1,6 +1,7 @@
 const Cart = require('../models/cartModel')
 
-//POST (add product to cart)
+// @route POST /api/cart/
+// @desc Add item to cart
 const addCart = async (req, res) => {
     const { userId, productId } = req.body
     try {
@@ -19,7 +20,8 @@ const addCart = async (req, res) => {
     }
 }
 
-//GET (Get all the cart item)
+// @route GET /api/cart/:id
+// @desc get cart based on user id
 const getCartByUserId = async (req, res) => {
     try {
         const cart = await Cart.find({ user: req.user.id }).populate('products')
@@ -32,7 +34,8 @@ const getCartByUserId = async (req, res) => {
     }
 }
 
-//DELETE (Delete cart item)
+// @route DELETE /api/cart/:cartId/products/:productId
+// @desc delete cart based on cart id and product id
 const deleteCartItem = async (req, res) => {
     try {
         const { cartId, productId } = req.params

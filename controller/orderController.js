@@ -3,7 +3,8 @@ const Order = require('../models/orderModel')
 const Product = require('../models/productModel')
 const User = require('../models/userModel')
 
-//POST (checkout the cart)
+// @route /api/order/checkout
+// @desc checkout api to store the order details and address
 const checkout = async (req, res) => {
     try {
         const userId = req.user.id
@@ -35,7 +36,8 @@ const checkout = async (req, res) => {
     }
 }
 
-//GET (get order based on user)
+// @route GET /api/order/
+// @desc Get orders based on user id
 const getOrder = async (req, res) => {
     try {
         const userId = req.user.id
@@ -46,7 +48,8 @@ const getOrder = async (req, res) => {
     }
 }
 
-//GET (get all the orders)
+// @route GET /api/order/admin
+// @desc get all orders for admin
 const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
@@ -56,7 +59,8 @@ const getAllOrders = async (req, res) => {
     }
 }
 
-//GET (get order product based on artist)
+// @route GET /api/order/artist
+// @desc get orders based on artist id
 const getArtistOrder = async (req, res) => {
     try {
         const artistId = req.user.id
@@ -86,7 +90,8 @@ const getArtistOrder = async (req, res) => {
     }
 }
 
-//PATCH (cancel order updating status)
+// @route PATCH /api/order/cancel
+// @desc Update the order for cancellation
 const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.body
@@ -100,7 +105,8 @@ const cancelOrder = async (req, res) => {
     }
 }
 
-//DELETE (removing the order from order list)
+// @route DELETE /api/order/:id
+// @desc Delete order based on id
 const deleteOrder = async (req, res) => {
     try {
         await Order.findByIdAndDelete(req.params.id)

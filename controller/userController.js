@@ -1,7 +1,8 @@
 const User = require('../models/userModel')
 const cloudinary = require('../config/cloudinaryConfig')
 
-//User profile API
+// @route GET /api/user
+// @desc Get user based on id
 const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
@@ -11,6 +12,8 @@ const getUser = async (req, res) => {
     }
 }
 
+// @route GET /api/user/artist
+// @desc Get all artist
 const getAllArtist = async (req, res) => {
     try {
         const user = await User.find({ role: 'artist' }).limit(10)
@@ -20,6 +23,8 @@ const getAllArtist = async (req, res) => {
     }
 }
 
+// @route GET /api/user/:id
+// @desc Get user based on id
 const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
@@ -29,6 +34,8 @@ const getUserById = async (req, res) => {
     }
 }
 
+// @route POST /api/user/upload
+// @desc Uplaod user image to cloudinary
 const uploadUserImage = async (req, res) => {
     try {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -41,6 +48,8 @@ const uploadUserImage = async (req, res) => {
     }
 }
 
+// @route PATCH /api/user/profile
+// @desc Update user details
 const updateUser = async (req, res) => {
     const { name, bio, profilePic, coverPic, gender, phoneNumber, location } = req.body.user
     try {
@@ -59,7 +68,8 @@ const updateUser = async (req, res) => {
     }
 }
 
-//User Address API
+// @route POST /api/user/address
+// @desc Add address to user
 const addAddress = async (req, res) => {
     try {
         const { fullName, phoneNumber, address, street, landmark, city, pincode, state } = req.body
@@ -72,6 +82,8 @@ const addAddress = async (req, res) => {
     }
 }
 
+// @route GET /api/user/address
+// @desc Get address of user
 const getAddress = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
@@ -81,6 +93,8 @@ const getAddress = async (req, res) => {
     }
 }
 
+// @route DELETE /api/user/address/:id
+// @desc Delete address of user
 const deleteAddress = async (req, res) => {
     try {
         const userId = req.user.id

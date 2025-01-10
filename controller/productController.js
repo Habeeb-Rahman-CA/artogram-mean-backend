@@ -1,7 +1,8 @@
 const Product = require('../models/productModel')
 const cloudinary = require('../config/cloudinaryConfig')
 
-//GET (Get all the product)
+// @route GET /api/product
+// @desc Get all products
 const getAllProduct = async (req, res) => {
     try {
         const products = await Product.find().populate({ path: "createdBy", select: ["name"] })
@@ -11,7 +12,8 @@ const getAllProduct = async (req, res) => {
     }
 }
 
-//GET (Get product based on Id)
+// @route GET /api/product/:id
+// @desc Get product based on id
 const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id).populate({ path: "createdBy", select: ["name", "profilePic"] })
@@ -28,7 +30,8 @@ const getProductById = async (req, res) => {
     }
 }
 
-//GET (Get product based on User ID)
+// @route GET /api/product/user
+// @desc Get product based on user id
 const getProductByUserId = async (req, res) => {
     try {
         const product = await Product.find({ createdBy: req.user.id })
@@ -41,7 +44,8 @@ const getProductByUserId = async (req, res) => {
     }
 }
 
-//GET(Get product based on Artist Id)
+// @route GET /api/product/artist/:id
+// @desc Get product based on artist id
 const getProductByArtistId = async (req, res) => {
     try {
         const product = await Product.find({ createdBy: req.params.id }).populate('createdBy').limit(10)
@@ -54,7 +58,8 @@ const getProductByArtistId = async (req, res) => {
     }
 }
 
-//POST (Create a product)
+// @route POST /api/product
+// @desc Create product
 const createProduct = async (req, res) => {
     const { name, category, img, desc, price, } = req.body
     try {
@@ -66,7 +71,8 @@ const createProduct = async (req, res) => {
     }
 }
 
-//POST (Upload Image to Cloudinary)
+// @route POST /api/product/upload
+// @desc Upload image to cloudinary
 const uploadImage = async (req, res) => {
     try {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -79,7 +85,8 @@ const uploadImage = async (req, res) => {
     }
 }
 
-//PUT (Update product by Id)
+// @route PUT /api/product/:id
+// @desc Update product based on id
 const updateProduct = async (req, res) => {
     const { name, category, img, desc, price } = req.body
     try {
@@ -96,7 +103,8 @@ const updateProduct = async (req, res) => {
     }
 }
 
-//DELETE (Delete the product based on ID)
+// @route DELETE /api/product/:id
+// @desc Delete product based on id
 const deleteProduct = async (req, res) => {
     try {
         await Product.findByIdAndDelete(req.params.id)

@@ -2,7 +2,8 @@ const bcyrpt = require('bcryptjs')
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 
-// Register
+// @route POST /api/auth/register
+// @desc Register user
 const register = async (req, res) => {
     const { name, email, password } = req.body
     try {
@@ -15,7 +16,8 @@ const register = async (req, res) => {
     }
 }
 
-// Login
+// @route POST /api/auth/login
+// @desc Login user
 const login = async (req, res) => {
     const { email, password } = req.body
     try {
@@ -38,6 +40,8 @@ const login = async (req, res) => {
     }
 }
 
+// @route POST /api/auth/logout
+// @desc Logout user
 const logout = async (req, res) => {
     res.clearCookie('authToken')
     res.status(200).json({ message: 'User logged out' })
