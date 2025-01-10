@@ -14,7 +14,9 @@ const uploadUserImage = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    const { name, bio, profilePic, coverPic, phoneNumber, gender } = req.body
+    const { name, bio, profilePic, coverPic, gender, phoneNumber } = req.body.user
+    console.log(name);
+    console.log(req.user.id);
     try {
         const user = await User.findByIdAndUpdate(req.user.id, {
             name: name,
@@ -23,8 +25,8 @@ const updateUser = async (req, res) => {
             coverPic: coverPic,
             phoneNumber: phoneNumber,
             gender: gender
-        })
-        res.status(200).json({ message: 'user profile updated', user })
+        }, { new: true })
+        res.status(200).json({ message: 'user profile updated', updated: user })
     } catch (err) {
         res.status(500).json({ message: 'Failed to update the user' })
     }

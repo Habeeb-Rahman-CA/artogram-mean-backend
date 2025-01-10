@@ -6,7 +6,7 @@ const upload = require('../middleware/multerConfig')
 
 router.route('/address').post(protect, addAddress).get(protect, getAddress)
 router.route('/address/:id').delete(protect, deleteAddress)
-router.route('/profile').put(protect, updateUser)
+router.route('/profile').patch(protect, updateUser)
 router.route('/upload').post(protect, upload.single('img'), uploadUserImage)
 
 module.exports = router
