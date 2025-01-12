@@ -2,13 +2,23 @@ const User = require('../models/userModel')
 const cloudinary = require('../config/cloudinaryConfig')
 
 // @route GET /api/user
-// @desc Get user based on id
+// @desc Get logged user based on id
 const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
         res.status(200).json({ message: 'fetched current user', user })
     } catch (err) {
         res.status(500).json({ message: 'failed to get user', err: err.message })
+    }
+}
+// @route GET /api/user/admin
+// @desc Get All user except admin
+const getAllUser = async (req, res) => {
+    try {
+        const user = await User.find({ role: { $ne: 'admin' } })
+        res.status(200).json({ message: 'fetch all users except admin', user })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch all user', err: err.message })
     }
 }
 
@@ -109,4 +119,4 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getUserById, getAllArtist }
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist }

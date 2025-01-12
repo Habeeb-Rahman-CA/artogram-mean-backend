@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getUserById, getAllArtist } = require('../controller/userController')
+const { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getUserById, getAllArtist, getAllUser } = require('../controller/userController')
 const { protect } = require('../middleware/authMiddleware')
 const upload = require('../middleware/multerConfig')
 
 router.route('/').get(protect, getUser)
+router.route('/admin').get(protect, getAllUser)
 router.route('/artist').get(protect, getAllArtist)
 router.route('/profile').patch(protect, updateUser)
 router.route('/upload').post(protect, upload.single('img'), uploadUserImage)
