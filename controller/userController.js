@@ -33,6 +33,17 @@ const getAllArtist = async (req, res) => {
     }
 }
 
+// @route GET /api/user/collab
+// @desc get all artist except logged artist for collab
+const getAllArtistExceptLogger = async (req, res) => {
+    try {
+        const user = await User.find({ _id: { $ne: req.user.id } })
+        res.status(200).json({message: 'fetched successfully', user})
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch artist' })
+    }
+}
+
 // @route GET /api/user/:id
 // @desc Get user based on id
 const getUserById = async (req, res) => {
@@ -119,4 +130,4 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist }
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist, getAllArtistExceptLogger }
