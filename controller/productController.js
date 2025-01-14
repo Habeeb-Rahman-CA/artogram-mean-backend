@@ -31,7 +31,7 @@ const getProductById = async (req, res) => {
 }
 
 // @route GET /api/product/user
-// @desc Get product based on user id
+// @desc Get product based on created user id
 const getProductByUserId = async (req, res) => {
     try {
         const product = await Product.find({ createdBy: req.user.id })
