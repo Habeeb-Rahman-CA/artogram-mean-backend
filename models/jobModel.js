@@ -22,4 +22,18 @@ const jobSchema = mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('Job', jobSchema)
+const hireReqSchema = mongoose.Schema({
+    title: { type: String, required: true },
+    companyName: { type: String, required: true },
+    description: { type: String, required: true },
+    recruiter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    artist: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    salary: { type: String, required: true },
+    location: { type: String, required: true },
+    status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' },
+})
+
+module.exports = {
+    Job: mongoose.model('Job', jobSchema),
+    HireReq: mongoose.model('HireReq', hireReqSchema)
+}
