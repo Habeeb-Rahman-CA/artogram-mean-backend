@@ -24,6 +24,17 @@ const getJobByEmployer = async (req, res) => {
     }
 }
 
+// @route GET /api/job/artist
+// @desc get all jobs oppertunities
+const getAllJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find().populate({path: 'recruiter', select: ['name', 'email']})
+        res.status(200).json({message: 'fetched all the jobs', jobs})
+    } catch (err) {
+        res.status(500).json({message: 'failed to fetch', err: err.message})
+    }
+}
+
 // @route PATCH /api/job/:id
 // @desc close the job oppertunities based on id
 const closeJob = async (req, res) => {
@@ -74,6 +85,17 @@ const getHireRequest = async (req, res) => {
     }
 }
 
+// @route GET /api/job/hire/response
+// @desc get hire response for employer
+const getHireResponse = async (req, res) => {
+    try {
+        const hireRes = await HireReq.find({ recruiter: req.user.id, status: { $ne: 'Pending' } }).populate({ path: 'artist', select: ['name', 'email', 'profilePic'] })
+        res.status(200).json({ message: 'fetching all the responses from artist', hireRes })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch response', err: err.message })
+    }
+}
+
 // @route POST /api/job/hire/response
 // @desc sent hire response from artist to employer
 const hireResponse = async (req, res) => {
@@ -82,10 +104,10 @@ const hireResponse = async (req, res) => {
         const hireReq = await HireReq.findById(requestId)
         hireReq.status = response
         await hireReq.save()
-        res.status(200).json({message: "Response sented successfully", hireReq})
+        res.status(200).json({ message: "Response sented successfully", hireReq })
     } catch (err) {
         res.status(500).json({ message: 'failed the to sent the hire response ' })
     }
 }
 
-module.exports = { createJob, getJobByEmployer, closeJob, deleteJob, hireRequest, getHireRequest, hireResponse }
+module.exports = { createJob, getJobByEmployer, closeJob, deleteJob, hireRequest, getHireRequest, hireResponse, getHireResponse, getAllJobs }
