@@ -185,8 +185,27 @@ const getUpgradeRoleReq = async (req, res) => {
 
 // @route GET /api/user/upgrade/response
 // @desc get responded request based on user id`
-const getUpgradeRoleRes = async(req, res)=>{
-
+const getUpgradeRoleRes = async (req, res) => {
+    try {
+        const roleUpgradeRes = await RoleUpgrade.find( { user: req.params.id, isUpgraded: true })
+        res.status(200).json({ message: 'fetch all the res', roleUpgradeRes })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to fetch the response' })
+    }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist, getAllArtistExceptLogger, upgradeRoleRequest, getUpgradeRoleReq, upgradeRoleResponse, deleteUpgradeRoleNotif }
+module.exports = {
+    addAddress,
+    getAddress,
+    deleteAddress,
+    updateUser,
+    uploadUserImage,
+    getUser, getAllUser,
+    getUserById, getAllArtist,
+    getAllArtistExceptLogger,
+    upgradeRoleRequest,
+    getUpgradeRoleReq,
+    upgradeRoleResponse,
+    deleteUpgradeRoleNotif,
+    getUpgradeRoleRes
+}
