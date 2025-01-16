@@ -1,9 +1,9 @@
 const Cart = require('../models/cartModel')
 const Order = require('../models/orderModel')
 const Product = require('../models/productModel')
-const User = require('../models/userModel')
+const { User } = require('../models/userModel')
 
-// @route /api/order/checkout
+// @route POST /api/order/checkout
 // @desc checkout api to store the order details and address
 const checkout = async (req, res) => {
     try {

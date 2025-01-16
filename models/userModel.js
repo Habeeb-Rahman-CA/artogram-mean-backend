@@ -20,10 +20,19 @@ const userSchema = mongoose.Schema({
     profilePic: { type: String, default: '' },
     coverPic: { type: String, default: '' },
     phoneNumber: { type: String, default: '' },
-    location: {type: String, default: ''},
+    location: { type: String, default: '' },
     addresses: [addressSchema],
     gender: { type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'], default: 'Prefer not to say' },
     createdAt: { type: Date, default: Date.now() }
 })
 
-module.exports = mongoose.model('User', userSchema)
+const roleUpgradeSchema = mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    newRole: { type: String, required: true },
+    isUpgraded: {type: Boolean, default: false}
+})
+
+module.exports = {
+    User: mongoose.model('User', userSchema),
+    RoleUpgrade: mongoose.model('RoleUpgrade', roleUpgradeSchema)
+}

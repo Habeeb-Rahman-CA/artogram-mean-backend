@@ -1,5 +1,5 @@
 const bcyrpt = require('bcryptjs')
-const User = require('../models/userModel')
+const { User } = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 
 // @route POST /api/auth/register

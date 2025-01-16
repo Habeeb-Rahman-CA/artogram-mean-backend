@@ -1,4 +1,4 @@
-const User = require('../models/userModel')
+const { User, RoleUpgrade } = require('../models/userModel')
 const cloudinary = require('../config/cloudinaryConfig')
 
 // @route GET /api/user
@@ -38,7 +38,7 @@ const getAllArtist = async (req, res) => {
 const getAllArtistExceptLogger = async (req, res) => {
     try {
         const user = await User.find({ _id: { $ne: req.user.id } })
-        res.status(200).json({message: 'fetched successfully', user})
+        res.status(200).json({ message: 'fetched successfully', user })
     } catch (err) {
         res.status(500).json({ message: 'failed to fetch artist' })
     }
@@ -130,4 +130,63 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist, getAllArtistExceptLogger }
+// @route POST /api/user/upgrade/request
+// @desc create a request to upgrade role
+const upgradeRoleRequest = async (req, res) => {
+    const { response } = req.body
+    try {
+        const roleUpgradeReq = new RoleUpgrade({ user: req.user.id, newRole: response })
+        await roleUpgradeReq.save()
+        res.status(200).json({ message: "Sented role upgrade request to admin", roleUpgradeReq })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to sent the req', err: err.message })
+    }
+}
+
+// @route PATCH /api/user/upgrade/response
+// @desc create a response request based on role
+const upgradeRoleResponse = async (req, res) => {
+    const { _id, user, newRole } = req.body
+    try {
+        const userRoleUpdate = await User.findByIdAndUpdate(user._id, {
+            role: newRole,
+        }, { new: true })
+        const upgradedRole = await RoleUpgrade.findByIdAndUpdate(_id, {
+            isUpgraded: true
+        }, { new: true })
+        console.log(upgradedRole);
+        res.status(200).json({ message: 'upgraded user role', userRoleUpdate, upgradedRole })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to sent response', err: err.message })
+    }
+}
+
+// @route DELETE /api/user/upgrade/reject/:id
+// @desc create a response request based on role
+const deleteUpgradeRoleNotif = async (req, res) => {
+    try {
+        await RoleUpgrade.findByIdAndDelete(req.params.id)
+        res.status(200).json({ message: 'Deleted successfully' })
+    } catch (err) {
+        res.status(500).json({ message: 'something went wrong' })
+    }
+}
+
+// @route GET /api/user/upgrade/request
+// @desc get all unresponded requests
+const getUpgradeRoleReq = async (req, res) => {
+    try {
+        const roleUpgradeReq = await RoleUpgrade.find({ isUpgraded: false }).populate({ path: 'user', select: ['name', 'email'] })
+        res.status(200).json({ message: 'fetched all the reqs', roleUpgradeReq })
+    } catch (err) {
+        res.status(500).json({ message: 'failed to get the reqs', err: err.message })
+    }
+}
+
+// @route GET /api/user/upgrade/response
+// @desc get responded request based on user id`
+const getUpgradeRoleRes = async(req, res)=>{
+
+}
+
+module.exports = { addAddress, getAddress, deleteAddress, updateUser, uploadUserImage, getUser, getAllUser, getUserById, getAllArtist, getAllArtistExceptLogger, upgradeRoleRequest, getUpgradeRoleReq, upgradeRoleResponse, deleteUpgradeRoleNotif }
