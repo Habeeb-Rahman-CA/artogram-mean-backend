@@ -154,7 +154,6 @@ const upgradeRoleResponse = async (req, res) => {
         const upgradedRole = await RoleUpgrade.findByIdAndUpdate(_id, {
             isUpgraded: true
         }, { new: true })
-        console.log(upgradedRole);
         res.status(200).json({ message: 'upgraded user role', userRoleUpdate, upgradedRole })
     } catch (err) {
         res.status(500).json({ message: 'failed to sent response', err: err.message })
