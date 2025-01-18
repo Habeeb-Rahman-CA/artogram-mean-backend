@@ -1,7 +1,14 @@
+const Razorpay = require('razorpay')
 const Cart = require('../models/cartModel')
 const Order = require('../models/orderModel')
 const Product = require('../models/productModel')
 const { User } = require('../models/userModel')
+const crypto = require('crypto')
+
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+})
 
 // @route POST /api/order/checkout
 // @desc checkout api to store the order details and address
@@ -18,22 +25,47 @@ const checkout = async (req, res) => {
         if (!selectedAddress) {
             return res.status(500).json({ message: 'Invalid Address' })
         }
+        const totalAmount = cart[0].products.reduce((sum, product) => sum + parseFloat(product.price), 0)
+        const razorpayOrder = await razorpay.orders.create({
+            amount: totalAmount * 100,
+            currency: 'INR',
+            receipt: `order_${Date.now()}`,
+            notes: { userId: userId }
+        }).catch(err => {
+            console.log(err);
+        });
         const order = new Order({
             user: userId,
             items: cart[0].products.map((product) => ({
                 product: product._id,
                 price: product.price
             })),
-            total: cart[0].products.reduce((sum, product) => sum + parseFloat(product.price), 0),
+            total: totalAmount,
             address: selectedAddress,
-            status: 'Placed'
+            status: 'Placed',
+            razorpayOrderId: razorpayOrder.id
         })
         await order.save()
         await Cart.findOneAndUpdate({ user: userId }, { products: [] })
-        res.status(200).json({ message: 'Order successfully placed', order })
+        res.status(200).json({ message: 'Order successfully placed', order, razorpayOrderId: razorpayOrder.id, amount: razorpayOrder.amount, currency: razorpayOrder.currency })
     } catch (err) {
         res.status(500).json({ message: 'failed to checkout the order', err: err.message })
     }
+}
+
+// @route PATCH /api/order/payment
+// @desc verify the payment to ship the order
+const verifyPayment = async (req, res) => {
+    const { paymentResponse, razorpayOrderId } = req.body;
+    const generatedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(`${razorpayOrderId}|${paymentResponse.razorpay_payment_id}`)
+        .digest('hex');
+    if (generatedSignature === paymentResponse.razorpay_signature) {
+        await Order.findOneAndUpdate({ razorpayOrderId }, { status: 'Shipped' });
+        return res.status(200).json({ message: 'Payment verified successfully!' });
+    }
+    return res.status(500).json({ message: 'Payment verification failed!' });
 }
 
 // @route GET /api/order/
@@ -116,4 +148,4 @@ const deleteOrder = async (req, res) => {
     }
 }
 
-module.exports = { checkout, getOrder, cancelOrder, deleteOrder, getAllOrders, getArtistOrder }
+module.exports = { checkout, getOrder, cancelOrder, deleteOrder, getAllOrders, getArtistOrder, verifyPayment }

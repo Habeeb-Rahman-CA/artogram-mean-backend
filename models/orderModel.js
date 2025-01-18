@@ -18,6 +18,7 @@ const orderSchema = mongoose.Schema({
         state: { type: String, default: '' },
     },
     status: { type: String, enum: ['Placed', 'Shipped', 'Delivered', 'Cancelled'], default: 'Placed' },
+    razorpayOrderId: { type: String },
     createdAt: { type: Date, default: Date.now() }
 }, {
     timestamps: true
