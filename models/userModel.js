@@ -29,7 +29,7 @@ const userSchema = mongoose.Schema({
 const roleUpgradeSchema = mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     newRole: { type: String, required: true },
-    isUpgraded: {type: Boolean, default: false}
+    isUpgraded: { type: Boolean, default: false }
 })
 
 module.exports = {

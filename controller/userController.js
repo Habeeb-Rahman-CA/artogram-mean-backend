@@ -186,7 +186,7 @@ const getUpgradeRoleReq = async (req, res) => {
 // @desc get responded request based on user id`
 const getUpgradeRoleRes = async (req, res) => {
     try {
-        const roleUpgradeRes = await RoleUpgrade.find( { user: req.params.id, isUpgraded: true })
+        const roleUpgradeRes = await RoleUpgrade.find({ user: req.params.id, isUpgraded: true })
         res.status(200).json({ message: 'fetch all the res', roleUpgradeRes })
     } catch (err) {
         res.status(500).json({ message: 'failed to fetch the response' })
